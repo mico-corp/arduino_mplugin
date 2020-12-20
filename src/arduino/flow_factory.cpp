@@ -27,7 +27,7 @@
 using namespace mico;
 using namespace flow;
 
-extern "C" flow::PluginNodeCreator* factory(){
+extern "C" FLOW_FACTORY_EXPORT flow::PluginNodeCreator* factory(){
     flow::PluginNodeCreator *creator = new flow::PluginNodeCreator;
 
     // Functions

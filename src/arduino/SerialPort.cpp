@@ -32,14 +32,14 @@ std::string SerialPort::readLine() {
     std::string result;
     int value = 0;
 
-    int counter = 0;
+    /*int counter = 0;
     while(value == 0){
         counter++;
         ioctl(serial_.lowest_layer().native_handle(), FIONREAD, &value);
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
         if(counter > 100)
             return "";
-    }
+    }*/
 
     for(;;)
     {
