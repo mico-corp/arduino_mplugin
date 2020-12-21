@@ -9,7 +9,8 @@
 
 #include <mico/arduino/SerialPort.h>
 
-SerialPort::SerialPort(std::string _port, unsigned int _baudRate) : io_(), serial_(io_,_port) {
+SerialPort::SerialPort(std::string _port, unsigned int _baudRate) : io_(), serial_(io_) {
+    serial_.open(_port);
     serial_.set_option(boost::asio::serial_port_base::baud_rate(_baudRate));
 }
 

@@ -36,9 +36,7 @@ namespace mico{
     public:
         virtual std::string name() const override {return "Arduino Device";}     
         virtual QIcon icon() const override { 
-            std::string userDir(getenv("USER"));
-            std::string resourcesDir = "/home/"+userDir+"/.flow/plugins/resources/arduino/";
-            return QIcon((resourcesDir+"arduino_icon.png").c_str());
+            return QIcon((resourceDir()+"arduino/arduino_icon.png").c_str());
         }
 
         
@@ -55,6 +53,9 @@ namespace mico{
         void readLoop();
 
         void parseArduinoMessage();
+
+        std::vector<std::string> getListOfDevices();
+
     private:
         std::shared_ptr<SerialPort> arduino_;
         bool isBeingUsed_ = false;

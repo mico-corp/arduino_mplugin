@@ -25,6 +25,7 @@
 
 #include <sstream>
 #include <mico/arduino/SerialPort.h>
+#include <string>
 
 namespace mico{
     ArduinoDeviceBlock::ArduinoDeviceBlock(){
@@ -110,7 +111,12 @@ namespace mico{
             std::stringstream ss;
             ss << p.second;
             if(p.first == "device"){
-                arduino_ = std::shared_ptr<SerialPort>(new SerialPort(p.second, 115200));
+                try{
+                    arduino_ = std::shared_ptr<SerialPort>(new SerialPort(p.second, 115200));
+                }catch(std::exception &_e){
+                    std::cout << _e.what();
+                    return false;
+                }
                 std::this_thread::sleep_for(std::chrono::seconds(1));
             }
         }
@@ -118,10 +124,36 @@ namespace mico{
     }
     
     std::vector<std::pair<std::string, flow::Block::eParameterType>> ArduinoDeviceBlock::parameters(){
+        getListOfDevices();
         return {
             {"device", flow::Block::eParameterType::STRING}
         };
     }
 
+    #if defined(_WIN32)
+        std::vector<std::string> ArduinoDeviceBlock::getListOfDevices() {
+            std::vector<std::string> devices;
+            char lpTargetPath[5000]; // buffer to store the path of the COMPORTS
+            bool gotPort = false; // in case the port is not found
+
+            for (int i = 0; i < 255; i++) // checking ports from COM0 to COM255
+            {
+                std::string str = "COM" + std::to_string(i); // converting to COM0, COM1, COM2
+                DWORD test = QueryDosDevice(str.c_str(), lpTargetPath, 5000);
+
+                // Test the return value and error if any
+                if (test != 0) { //QueryDosDevice returns zero if it didn't find an object
+                    devices.push_back(str);
+                    std::cout << str << std::endl;
+                }
+
+                if (::GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
+
+                }
+            }
+
+            return devices;
+        }
+    #endif
 
 }
