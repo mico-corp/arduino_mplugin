@@ -144,7 +144,7 @@ namespace mico{
                 // Test the return value and error if any
                 if (test != 0) { //QueryDosDevice returns zero if it didn't find an object
                     devices.push_back(str);
-                    std::cout << str << std::endl;
+                    std::cout << str << " --> " << lpTargetPath << std::endl;
                 }
 
                 if (::GetLastError() == ERROR_INSUFFICIENT_BUFFER) {

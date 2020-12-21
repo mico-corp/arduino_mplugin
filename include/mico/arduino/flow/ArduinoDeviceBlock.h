@@ -36,7 +36,7 @@ namespace mico{
     public:
         virtual std::string name() const override {return "Arduino Device";}     
         virtual QIcon icon() const override { 
-            return QIcon((resourceDir()+"arduino/arduino_icon.png").c_str());
+            return QIcon((flow::Persistency::resourceDir()+"arduino/arduino_icon.png").c_str());
         }
 
         
