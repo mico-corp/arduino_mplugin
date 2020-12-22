@@ -10,11 +10,15 @@
 #ifndef _SIMPLESERIAL_H
 #define	_SIMPLESERIAL_H
 
-#include <boost/asio.hpp>
+#if defined(_WIN32)
+#   include <windows.h>
+#elif defined(__linux__)
+#   include <boost/asio.hpp>
+#endif
+
 #include <iostream>
 
-class SerialPort
-{
+class SerialPort {
     public:
         /**
          * Constructor.
@@ -29,7 +33,7 @@ class SerialPort
          * Check if port is opened
          * \throws boost::system::system_error on failure
          */
-        bool isOpen() const;
+        bool isOpen();
 
         /**
          * Close connection
@@ -60,8 +64,15 @@ class SerialPort
         std::string readBytes(unsigned _bytes);
 
     private:
-        boost::asio::io_service io_;
-        boost::asio::serial_port serial_;
+        #if defined(_WIN32)
+            HANDLE handler;
+            bool connected;
+            COMSTAT status;
+            DWORD errors;
+        #elif defined(__linux__)
+            boost::asio::io_service io_;
+            boost::asio::serial_port serial_;
+        #endif
 };
 
 #endif	/* _SIMPLESERIAL_H */
