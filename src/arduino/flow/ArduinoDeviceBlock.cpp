@@ -64,8 +64,7 @@ namespace mico{
                 if(arduino_->isOpen()){
                     while(isBeingUsed_){}
                     isBeingUsed_ = true;
-                    arduino_->writeString("{\"D2\":"+val+"}");
-                    std::cout << "{\"D2\":"+val+"}" << std::endl;
+                    arduino_->writeString("{\"D2\":"+val+"}\n");
                     isBeingUsed_ = false;
                 }
             }
@@ -78,8 +77,7 @@ namespace mico{
                 if(arduino_->isOpen()){
                     while(isBeingUsed_){}
                     isBeingUsed_ = true;
-                    arduino_->writeString("{\"D3\":"+val+"}");
-                    std::cout << "{\"D3\":"+val+"}" << std::endl;
+                    arduino_->writeString("{\"D3\":"+val+"}\n");
                     isBeingUsed_=false;
                 }
             }
@@ -92,8 +90,7 @@ namespace mico{
                 if(arduino_->isOpen()){
                     while(isBeingUsed_){}
                     isBeingUsed_ = true;
-                    arduino_->writeString("{\"D4\":"+val+"}");
-                    std::cout << "{\"D4\":"+val+"}" << std::endl;
+                    arduino_->writeString("{\"D4\":"+val+"}\n");
                     isBeingUsed_ = false;
                 }
             }
