@@ -19,54 +19,30 @@
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //---------------------------------------------------------------------------------------------------------------------
 
+#ifndef MICO_ARDUINO_CMDPARSER_H_
+#define MICO_ARDUINO_CMDPARSER_H_
 
 
-#ifndef MICO_ARDUINO_FLOW_FUNCTIONBLOCKS_H_
-#define MICO_ARDUINO_FLOW_FUNCTIONBLOCKS_H_
-
-#include <flow/Block.h>
-
-
-class QLineEdit;
-class SerialPort;
+#include <ArduinoSTL.h>
+#include <vector>
+#include <ArduinoJson.h>
 
 namespace mico{
+  enum class CMD_TYPE { NONE, DIGITAL, ANALOG, PWM, SOFT_SERIAL };
 
-    class ArduinoDeviceBlock:public flow::Block{
+  struct Command{
+    CMD_TYPE type_;
+    int pin_;
+    JsonVariant content_;
+  };
+
+  class CmdParser{
     public:
-        virtual std::string name() const override {return "Arduino Device";}     
-        virtual QIcon icon() const override { 
-            return QIcon((flow::Persistency::resourceDir()+"arduino/arduino_icon.png").c_str());
-        }
-
-        
-        ArduinoDeviceBlock();
-        ~ArduinoDeviceBlock();
-
-        virtual bool configure(std::unordered_map<std::string, std::string> _params) override;
-        std::vector<std::pair<std::string, flow::Block::eParameterType>> parameters() override;
-
-        std::string description() const override {return    "Arduino Device. Configure connection with"
-                                                            "arduino device to use the rest of the blocks\n";};
-
-    protected:
-        void readLoop();
-
-        void parseArduinoMessage();
-
-        std::vector<std::string> getListOfDevices();
+      static std::vector<Command> parseMessage(StaticJsonDocument<200> &_data);
 
     private:
-        std::shared_ptr<SerialPort> arduino_;
-        bool isBeingUsed_ = false;
-        bool isRunning_ = true;
-        std::thread readThread_;
-    };
-
-
-
+      static Command parseCmd(const JsonPair& _cmd);
+      
+  };
 }
-
-
-
 #endif

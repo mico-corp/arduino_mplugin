@@ -19,54 +19,56 @@
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //---------------------------------------------------------------------------------------------------------------------
 
-
-
-#ifndef MICO_ARDUINO_FLOW_FUNCTIONBLOCKS_H_
-#define MICO_ARDUINO_FLOW_FUNCTIONBLOCKS_H_
-
-#include <flow/Block.h>
-
-
-class QLineEdit;
-class SerialPort;
+#include "CmdParser.h"
 
 namespace mico{
+  
+  std::vector<Command> CmdParser::parseMessage(StaticJsonDocument<200> &_data){
+    std::vector<Command> cmds;
+    JsonObject root = _data.as<JsonObject>();
+    for (const JsonPair& keyValue: root) {
+      Command cmd = CmdParser::parseCmd(keyValue);
+      cmds.push_back(cmd);
+    }
+    
+    return cmds;
+  }
+      
+  Command CmdParser::parseCmd(const JsonPair&  _cmd){
+    Command cmd;
+    cmd.content_ = _cmd.value();
+    String key = _cmd.key().c_str();
+    if(key[0] == 'D'){
+      cmd.type_ = CMD_TYPE::DIGITAL;
+      cmd.pin_ = key[1] - '0';
+      //Serial.print("Digital cmd with pin ");
+      //Serial.print(cmd.pin_);
+      //Serial.print(" and value ");
+      //Serial.println(cmd.content_.as<bool>());
+    }else if(key[0] == 'A'){
+      cmd.type_ = CMD_TYPE::ANALOG;
+      cmd.pin_ = key[1] - '0';
+      //Serial.print("Analog cmd with pin ");
+      //Serial.print(cmd.pin_);
+      //Serial.print(" and value ");
+      //Serial.println(cmd.content_.as<int>());
+    }else if(key.indexOf("PWM") > -1){
+      cmd.type_ = CMD_TYPE::PWM;
+      cmd.pin_ = key[3] - '0' + 8;
+      //Serial.print("Pwm cmd with pin ");
+      //Serial.print(cmd.pin_);
+      //Serial.print(" and value ");
+      //Serial.println(cmd.content_.as<int>());
+    }else{  // 
+      //Serial.print("None cmd with key ");
+      //Serial.print(key);
+      //Serial.print(" and content ");
+      //Serial.println(cmd.content_.as<int>());
+      cmd.type_ = CMD_TYPE::NONE;
+    }
 
-    class ArduinoDeviceBlock:public flow::Block{
-    public:
-        virtual std::string name() const override {return "Arduino Device";}     
-        virtual QIcon icon() const override { 
-            return QIcon((flow::Persistency::resourceDir()+"arduino/arduino_icon.png").c_str());
-        }
-
-        
-        ArduinoDeviceBlock();
-        ~ArduinoDeviceBlock();
-
-        virtual bool configure(std::unordered_map<std::string, std::string> _params) override;
-        std::vector<std::pair<std::string, flow::Block::eParameterType>> parameters() override;
-
-        std::string description() const override {return    "Arduino Device. Configure connection with"
-                                                            "arduino device to use the rest of the blocks\n";};
-
-    protected:
-        void readLoop();
-
-        void parseArduinoMessage();
-
-        std::vector<std::string> getListOfDevices();
-
-    private:
-        std::shared_ptr<SerialPort> arduino_;
-        bool isBeingUsed_ = false;
-        bool isRunning_ = true;
-        std::thread readThread_;
-    };
-
-
-
+    return cmd;
+    
+  }
+      
 }
-
-
-
-#endif

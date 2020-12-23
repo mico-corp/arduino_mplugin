@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------------------------------------------------
-//  Cameras wrapper MICO plugin
+//  Arduino MICO plugin
 //---------------------------------------------------------------------------------------------------------------------
 //  Copyright 2020 Pablo Ramon Soria (a.k.a. Bardo91) pabramsor@gmail.com
 //---------------------------------------------------------------------------------------------------------------------
@@ -33,6 +33,10 @@ extern "C" FLOW_FACTORY_EXPORT flow::PluginNodeCreator* factory(){
     // Functions
     creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<ArduinoDeviceBlock>>(); }, "arduino");
     creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<ToggleButtonBlock>>(); }, "arduino");
+    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<SliderPwm>>(); }, "arduino");
+    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<NotOperator>>(); }, "arduino");
+    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<AndOperator>>(); }, "arduino");
+    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<OrOperator>>(); }, "arduino");
 
     return creator;
 }

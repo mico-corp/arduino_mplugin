@@ -19,54 +19,31 @@
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //---------------------------------------------------------------------------------------------------------------------
 
+#ifndef MICO_ARDUINO_CMDRUNNER_H_
+#define MICO_ARDUINO_CMDRUNNER_H_
 
+#include <ArduinoSTL.h>
+#include <map>
 
-#ifndef MICO_ARDUINO_FLOW_FUNCTIONBLOCKS_H_
-#define MICO_ARDUINO_FLOW_FUNCTIONBLOCKS_H_
-
-#include <flow/Block.h>
-
-
-class QLineEdit;
-class SerialPort;
+#include "CmdParser.h"
 
 namespace mico{
-
-    class ArduinoDeviceBlock:public flow::Block{
+  class CmdRunner{
     public:
-        virtual std::string name() const override {return "Arduino Device";}     
-        virtual QIcon icon() const override { 
-            return QIcon((flow::Persistency::resourceDir()+"arduino/arduino_icon.png").c_str());
-        }
+      void init();
+      void run(const Command &_cmd);
+      void sendInputs();
+      
+    private:
+      void runDigital(const Command &_cmd);
+      void runAnalog(const Command &_cmd);
+      void runPwm(const Command &_cmd);
+      void runSerial(const Command &_cmd);
 
-        
-        ArduinoDeviceBlock();
-        ~ArduinoDeviceBlock();
-
-        virtual bool configure(std::unordered_map<std::string, std::string> _params) override;
-        std::vector<std::pair<std::string, flow::Block::eParameterType>> parameters() override;
-
-        std::string description() const override {return    "Arduino Device. Configure connection with"
-                                                            "arduino device to use the rest of the blocks\n";};
-
-    protected:
-        void readLoop();
-
-        void parseArduinoMessage();
-
-        std::vector<std::string> getListOfDevices();
 
     private:
-        std::shared_ptr<SerialPort> arduino_;
-        bool isBeingUsed_ = false;
-        bool isRunning_ = true;
-        std::thread readThread_;
-    };
-
-
-
+      std::map<int, bool> digitalInputs_;
+  };
 }
-
-
 
 #endif

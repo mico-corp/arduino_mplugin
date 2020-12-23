@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------------------------------------------------
-//  Cameras wrapper MICO plugin
+//  Arduino MICO plugin
 //---------------------------------------------------------------------------------------------------------------------
 //  Copyright 2020 Pablo Ramon Soria (a.k.a. Bardo91) pabramsor@gmail.com
 //---------------------------------------------------------------------------------------------------------------------
@@ -21,9 +21,9 @@
 
 
 #include <mico/arduino/flow/Widgets.h>
-#include <flow/Outpipe.h>
 
 #include <QPushButton>
+#include <QSlider>
 
 namespace mico{
 
@@ -39,5 +39,22 @@ namespace mico{
 
     QWidget * ToggleButtonBlock::customWidget(){
         return button_;
+    }
+
+    
+    SliderPwm::SliderPwm(){
+        createPipe("pwm", "int");
+
+        slider_ = new QSlider();
+        slider_->setMinimum(0);
+        slider_->setMaximum(255);
+        
+        QObject::connect(slider_, &QSlider::valueChanged,[&](int _val){
+            getPipe("pwm")->flush(_val);
+        });
+    }
+
+    QWidget * SliderPwm::customWidget(){
+        return slider_;
     }
 }

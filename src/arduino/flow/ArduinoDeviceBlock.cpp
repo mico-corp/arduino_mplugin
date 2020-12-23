@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------------------------------------------------
-//  Cameras wrapper MICO plugin
+//  Arduino MICO plugin
 //---------------------------------------------------------------------------------------------------------------------
 //  Copyright 2020 Pablo Ramon Soria (a.k.a. Bardo91) pabramsor@gmail.com
 //---------------------------------------------------------------------------------------------------------------------
@@ -22,6 +22,7 @@
 
 #include <mico/arduino/flow/ArduinoDeviceBlock.h>
 #include <flow/Outpipe.h>
+#include <mico/arduino/json.hpp>
 
 #include <sstream>
 #include <mico/arduino/SerialPort.h>
@@ -54,17 +55,20 @@ namespace mico{
                         {"A1", "int"},
                         {"A2", "int"},
                         {"A3", "int"},
+                        {"A4", "int"},
+                        {"A5", "int"},
                         {"SoftwareSerial1", "string"},
                         {"SoftwareSerial2", "string"}});
 
         registerCallback({"D2"}, 
             [&](flow::DataFlow _data){
-                auto v = _data.get<bool>("D2");
-                std::string val = (v?"1":"0");
                 if(arduino_->isOpen()){
                     while(isBeingUsed_){}
                     isBeingUsed_ = true;
-                    arduino_->writeString("{\"D2\":"+val+"}\n");
+                    nlohmann::json  msg;
+                    msg["D2"]["is_input"] = 0;
+                    msg["D2"]["value"] = (bool)_data.get<bool>("D2");
+                    arduino_->writeString(  msg.dump() + "\n");
                     isBeingUsed_ = false;
                 }
             }
@@ -72,32 +76,53 @@ namespace mico{
 
         registerCallback({"D3"}, 
             [&](flow::DataFlow _data){
-                auto v = _data.get<bool>("D3");
-                std::string val = (v?"1":"0");
                 if(arduino_->isOpen()){
                     while(isBeingUsed_){}
                     isBeingUsed_ = true;
-                    arduino_->writeString("{\"D3\":"+val+"}\n");
+                    nlohmann::json  msg;
+                    msg["D3"]["is_input"] = 0;
+                    msg["D3"]["value"] = (bool)_data.get<bool>("D3");
+                    arduino_->writeString(  msg.dump() + "\n");
                     isBeingUsed_=false;
                 }
             }
         );
-
+        
         registerCallback({"D4"}, 
             [&](flow::DataFlow _data){
-                auto v = _data.get<bool>("D4");
-                std::string val = (v?"1":"0");
                 if(arduino_->isOpen()){
                     while(isBeingUsed_){}
                     isBeingUsed_ = true;
-                    arduino_->writeString("{\"D4\":"+val+"}\n");
+                    nlohmann::json  msg;
+                    msg["D4"]["is_input"] = 0;
+                    msg["D4"]["value"] = (bool)_data.get<bool>("D4");
+                    arduino_->writeString(  msg.dump() + "\n");
                     isBeingUsed_ = false;
                 }
             }
         );
+
+
+        registerCallback({ "PWM1" },
+                [&](flow::DataFlow _data) {
+                auto v = _data.get<int>("PWM1");
+                std::string val = std::to_string(v);
+                if (arduino_->isOpen()) {
+                    while (isBeingUsed_) {}
+                    isBeingUsed_ = true;
+                    arduino_->writeString("{\"PWM1\":" + val + "}\n");
+                    isBeingUsed_ = false;
+                }
+            }
+        );
+
     }
 
     ArduinoDeviceBlock::~ArduinoDeviceBlock(){
+        isRunning_ = false;
+        if(readThread_.joinable())
+            readThread_.join();
+
         if(arduino_){
             arduino_->close();
         }
@@ -115,6 +140,32 @@ namespace mico{
                     return false;
                 }
                 std::this_thread::sleep_for(std::chrono::seconds(1));
+                readThread_ = std::thread([&]() {
+                    while (isRunning_) {
+                        std::string cmd = arduino_->readLine();
+                        //std::cout << cmd << std::endl;
+                        try {
+                            nlohmann::json json = nlohmann::json::parse(cmd);
+                            for (nlohmann::json::iterator it = json.begin(); it != json.end(); it++) {
+                                if (it.key()[0] == 'D' && getPipe(it.key()) != nullptr) {
+                                    getPipe(it.key())->flush(it.value().get<bool>());
+                                }
+                                else if (it.key()[0] == 'A' && getPipe(it.key()) != nullptr) {
+                                    getPipe(it.key())->flush(it.value().get<int>());
+                                }
+                                else if (it.key().find("PWM") != std::string::npos && getPipe(it.key()) != nullptr) {
+
+                                }
+                                else if (it.key().find("SERIAL") != std::string::npos && getPipe(it.key()) != nullptr) {
+
+                                }
+                            }
+                        }
+                        catch (std::exception& _e) {
+
+                        }
+                    }
+                });
             }
         }
         return false;
