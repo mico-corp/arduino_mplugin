@@ -30,10 +30,6 @@
 
 namespace mico{
     ArduinoDeviceBlock::ArduinoDeviceBlock(){
-        createPipe("A0", "int");
-        createPipe("A1", "int");
-        createPipe("A2", "int");
-        createPipe("A3", "int");
         createPipe("D2", "bool");
         createPipe("D3", "bool");
         createPipe("D4", "bool");

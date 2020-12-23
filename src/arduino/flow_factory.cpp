@@ -32,11 +32,13 @@ extern "C" FLOW_FACTORY_EXPORT flow::PluginNodeCreator* factory(){
 
     // Functions
     creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<ArduinoDeviceBlock>>(); }, "arduino");
-    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<ToggleButtonBlock>>(); }, "arduino");
-    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<SliderPwm>>(); }, "arduino");
-    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<NotOperator>>(); }, "arduino");
-    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<AndOperator>>(); }, "arduino");
-    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<OrOperator>>(); }, "arduino");
+
+    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<ToggleButtonBlock>>(); }, "interactive");
+    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<SliderPwm>>(); }, "interactive");
+
+    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<NotOperator>>(); }, "logic");
+    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<AndOperator>>(); }, "logic");
+    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<OrOperator>>(); }, "logic");
 
     return creator;
 }
