@@ -174,8 +174,8 @@ namespace mico{
         };
     }
 
+    std::vector<std::string> ArduinoDeviceBlock::getListOfDevices() {
     #if defined(_WIN32)
-        std::vector<std::string> ArduinoDeviceBlock::getListOfDevices() {
             std::vector<std::string> devices;
             char lpTargetPath[5000]; // buffer to store the path of the COMPORTS
             bool gotPort = false; // in case the port is not found
@@ -197,7 +197,10 @@ namespace mico{
             }
 
             return devices;
-        }
     #endif
+    #if defined(__linux__)
+        return {};
+    #endif
+    }
 
 }

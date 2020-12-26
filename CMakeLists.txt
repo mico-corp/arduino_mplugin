@@ -33,7 +33,8 @@ SET(MICO_MODULES ${MICO_MODULES} arduino PARENT_SCOPE)
 add_mplugin(    PLUGIN_NAME ${PLUGIN_NAME} 
                 PLUGIN_SOURCES ${MICO_ARDUINO_SOURCE_FILES}
                 PLUGIN_HEADERS  ${MICO_ARDUINO_HEADER_FILES} 
-                MICO_DEPS core)
+				MICO_DEPS core
+				HAS_RESOURCES)
 
 
 ##################################################
