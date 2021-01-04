@@ -43,8 +43,8 @@ namespace mico{
         ArduinoDeviceBlock();
         ~ArduinoDeviceBlock();
 
-        virtual bool configure(std::unordered_map<std::string, std::string> _params) override;
-        std::vector<std::pair<std::string, flow::Block::eParameterType>> parameters() override;
+        virtual bool configure(std::vector<flow::ConfigParameterDef> _params) override;
+        std::vector<flow::ConfigParameterDef> parameters() override;
 
         std::string description() const override {return    "Arduino Device. Configure connection with"
                                                             "arduino device to use the rest of the blocks\n";};

@@ -124,28 +124,32 @@ namespace mico{
         }
     }
 
-    bool ArduinoDeviceBlock::configure(std::unordered_map<std::string, std::string> _params) {
-        for(auto &p:_params){
-            std::stringstream ss;
-            ss << p.second;
-            if(p.first == "device"){
-                try{
-                    arduino_ = std::shared_ptr<SerialPort>(new SerialPort(p.second, 115200));
-                }catch(std::exception &_e){
-                    std::cout << _e.what();
-                    return false;
-                }
-                std::this_thread::sleep_for(std::chrono::seconds(1));
-                readThread_ = std::thread(&ArduinoDeviceBlock::readLoop, this);
+    bool ArduinoDeviceBlock::configure(std::vector<flow::ConfigParameterDef> _params) {
+        if(auto param = getParamByName(_params, "device"); param){
+            try{
+                arduino_ = std::shared_ptr<SerialPort>(new SerialPort(param.value().asString(), 115200));
+            }catch(std::exception &_e){
+                std::cout << _e.what();
+                return false;
             }
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+            readThread_ = std::thread(&ArduinoDeviceBlock::readLoop, this);
         }
-        return false;
+
+        return true;
     }
     
-    std::vector<std::pair<std::string, flow::Block::eParameterType>> ArduinoDeviceBlock::parameters(){
+    std::vector<flow::ConfigParameterDef> ArduinoDeviceBlock::parameters(){
         getListOfDevices();
+
+        #if defined(WIN32)
+            auto defaultPorts = getListOfDevices();
+        #else if defined(__linux__)
+            auto defaultPorts = { "/dev/ttyUSB0" };
+        #endif
+
         return {
-            {"device", flow::Block::eParameterType::OPTIONS}
+            {"device", flow::ConfigParameterDef::eParameterType::OPTIONS, defaultPorts}
         };
     }
 
