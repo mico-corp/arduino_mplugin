@@ -136,32 +136,7 @@ namespace mico{
                     return false;
                 }
                 std::this_thread::sleep_for(std::chrono::seconds(1));
-                readThread_ = std::thread([&]() {
-                    while (isRunning_) {
-                        std::string cmd = arduino_->readLine();
-                        //std::cout << cmd << std::endl;
-                        try {
-                            nlohmann::json json = nlohmann::json::parse(cmd);
-                            for (nlohmann::json::iterator it = json.begin(); it != json.end(); it++) {
-                                if (it.key()[0] == 'D' && getPipe(it.key()) != nullptr) {
-                                    getPipe(it.key())->flush(it.value().get<bool>());
-                                }
-                                else if (it.key()[0] == 'A' && getPipe(it.key()) != nullptr) {
-                                    getPipe(it.key())->flush(it.value().get<int>());
-                                }
-                                else if (it.key().find("PWM") != std::string::npos && getPipe(it.key()) != nullptr) {
-
-                                }
-                                else if (it.key().find("SERIAL") != std::string::npos && getPipe(it.key()) != nullptr) {
-
-                                }
-                            }
-                        }
-                        catch (std::exception& _e) {
-
-                        }
-                    }
-                });
+                readThread_ = std::thread(&ArduinoDeviceBlock::readLoop, this);
             }
         }
         return false;
@@ -170,10 +145,37 @@ namespace mico{
     std::vector<std::pair<std::string, flow::Block::eParameterType>> ArduinoDeviceBlock::parameters(){
         getListOfDevices();
         return {
-            {"device", flow::Block::eParameterType::STRING}
+            {"device", flow::Block::eParameterType::OPTIONS}
         };
     }
 
+    void ArduinoDeviceBlock::readLoop(){
+        while (isRunning_) {
+            std::string cmd = arduino_->readLine();
+            //std::cout << cmd << std::endl;
+            try {
+                nlohmann::json json = nlohmann::json::parse(cmd);
+                for (nlohmann::json::iterator it = json.begin(); it != json.end(); it++) {
+                    if (it.key()[0] == 'D' && getPipe(it.key()) != nullptr) {
+                        getPipe(it.key())->flush(it.value().get<bool>());
+                    }
+                    else if (it.key()[0] == 'A' && getPipe(it.key()) != nullptr) {
+                        getPipe(it.key())->flush(it.value().get<int>());
+                    }
+                    else if (it.key().find("PWM") != std::string::npos && getPipe(it.key()) != nullptr) {
+
+                    }
+                    else if (it.key().find("SERIAL") != std::string::npos && getPipe(it.key()) != nullptr) {
+
+                    }
+                }
+            }
+            catch (std::exception& _e) {
+
+            }
+        }
+    }
+    
     std::vector<std::string> ArduinoDeviceBlock::getListOfDevices() {
     #if defined(_WIN32)
             std::vector<std::string> devices;
