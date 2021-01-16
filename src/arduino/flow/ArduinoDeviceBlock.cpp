@@ -143,9 +143,9 @@ namespace mico{
         getListOfDevices();
 
         #if defined(WIN32)
-            auto defaultPorts = getListOfDevices();
-        #else if defined(__linux__)
-            auto defaultPorts = { "/dev/ttyUSB0" };
+            std::vector<std::string> defaultPorts = getListOfDevices();
+        #elif defined(__linux__)
+            std::vector<std::string> defaultPorts = { "/dev/ttyUSB0" };
         #endif
 
         return {
