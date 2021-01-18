@@ -28,7 +28,7 @@
 namespace mico{
 
     ToggleButtonBlock::ToggleButtonBlock(){
-        createPipe("state", "bool");
+        createPipe<bool>("state");
 
         button_ = new QPushButton("Toggle me");
         button_->setCheckable(true);
@@ -43,7 +43,7 @@ namespace mico{
 
     
     SliderPwm::SliderPwm(){
-        createPipe("pwm", "int");
+        createPipe<int>("pwm");
 
         slider_ = new QSlider();
         slider_->setMinimum(0);

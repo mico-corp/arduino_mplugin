@@ -74,9 +74,11 @@ namespace mico{
     class NotOperator :public flow::Block{
     public:
         NotOperator(){
-            createPipe("NoA", "bool");
-            createPolicy({  {"A", "bool"}});
-            registerCallback({"A", "B"}, 
+            createPipe<bool>("NoA");
+            
+            createPolicy({  flow::makeInput<bool>("A")});
+
+            registerCallback({"A"}, 
                 [&](flow::DataFlow _data){
                     bool res = !_data.get<bool>("A");
                     getPipe("NoA")->flush(res);
@@ -96,8 +98,9 @@ namespace mico{
     class AndOperator :public flow::Block{
     public:
         AndOperator(){
-            createPipe("out", "bool");
-            createPolicy({  {"A", "bool"}, {"B", "bool"} });
+            createPipe<bool>("out");
+            createPolicy({  flow::makeInput<bool>("A"),
+                            flow::makeInput<bool>("B") });
             registerCallback({"A", "B"}, 
                 [&](flow::DataFlow _data){
                     bool res = _data.get<bool>("A") && _data.get<bool>("B");
@@ -118,8 +121,9 @@ namespace mico{
     class OrOperator :public flow::Block{
     public:
         OrOperator(){
-            createPipe("out", "bool");
-            createPolicy({  {"A", "bool"}, {"B", "bool"} });
+            createPipe<bool>("out");
+            createPolicy({  flow::makeInput<bool>("A"),
+                            flow::makeInput<bool>("B") });
             registerCallback({"in"}, 
                 [&](flow::DataFlow _data){
                     bool res = _data.get<bool>("A") || _data.get<bool>("B");

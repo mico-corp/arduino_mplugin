@@ -30,31 +30,31 @@
 
 namespace mico{
     ArduinoDeviceBlock::ArduinoDeviceBlock(){
-        createPipe("D2", "bool");
-        createPipe("D3", "bool");
-        createPipe("D4", "bool");
-        createPipe("D5", "bool");
-        createPipe("D6", "bool");
-        createPipe("D7", "bool");
-        createPipe("SoftwareSerial1", "string");
-        createPipe("SoftwareSerial2", "string");
+        createPipe<bool>("D2");
+        createPipe<bool>("D3");
+        createPipe<bool>("D4");
+        createPipe<bool>("D5");
+        createPipe<bool>("D6");
+        createPipe<bool>("D7");
+        createPipe<std::string>("SoftwareSerial1");
+        createPipe<std::string>("SoftwareSerial2");
 
-        createPolicy({  {"D2", "bool"},
-                        {"D3", "bool"},
-                        {"D4", "bool"},
-                        {"D5", "bool"},
-                        {"D6", "bool"},
-                        {"PWM0", "int"},
-                        {"PWM1", "int"},
-                        {"PWM2", "int"},
-                        {"A0", "int"},
-                        {"A1", "int"},
-                        {"A2", "int"},
-                        {"A3", "int"},
-                        {"A4", "int"},
-                        {"A5", "int"},
-                        {"SoftwareSerial1", "string"},
-                        {"SoftwareSerial2", "string"}});
+        createPolicy({  flow::makeInput<bool>("D2"),
+                        flow::makeInput<bool>("D3"),
+                        flow::makeInput<bool>("D4"),
+                        flow::makeInput<bool>("D5"),
+                        flow::makeInput<bool>("D6"),
+                        flow::makeInput<int>("PWM0"),
+                        flow::makeInput<int>("PWM1"),
+                        flow::makeInput<int>("PWM2"),
+                        flow::makeInput<int>("A0"),
+                        flow::makeInput<int>("A1"),
+                        flow::makeInput<int>("A2"),
+                        flow::makeInput<int>("A3"),
+                        flow::makeInput<int>("A4"),
+                        flow::makeInput<int>("A5"),
+                        flow::makeInput<std::string>("SoftwareSerial1"),
+                        flow::makeInput<std::string>("SoftwareSerial2")});
 
         registerCallback({"D2"}, 
             [&](flow::DataFlow _data){
