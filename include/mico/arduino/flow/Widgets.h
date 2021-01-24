@@ -29,19 +29,15 @@
 
 class QPushButton;
 class QSlider;
+class QLabel;
+class QGroupBox;
 
 namespace mico{
 
     class ToggleButtonBlock:public flow::Block{
     public:
-        virtual std::string name() const override {return "Toggle Button";}     
-        // virtual QIcon icon() const override { 
-        //     std::string userDir(getenv("USER"));
-        //     std::string resourcesDir = "/home/"+userDir+"/.flow/plugins/resources/arduino/";
-        //     return QIcon((resourcesDir+"arduino_icon.png").c_str());
-        // }
-
-        virtual QWidget * customWidget() override;
+        std::string name() const override {return "Toggle Button";}     
+        QWidget * customWidget() override;
         
         ToggleButtonBlock();
 
@@ -50,24 +46,32 @@ namespace mico{
         QPushButton *button_;
     };
 
-    
-    class SliderPwm :public flow::Block{
+
+    class SliderPwm :public flow::Block {
     public:
         SliderPwm();
 
-        virtual std::string name() const override {return "Slider Pwm";}     
-        // virtual QIcon icon() const override { 
-        //     std::string userDir(getenv("USER"));
-        //     std::string resourcesDir = "/home/"+userDir+"/.flow/plugins/resources/arduino/";
-        //     return QIcon((resourcesDir+"arduino_icon.png").c_str());
-        // }
+        std::string name() const override { return "Slider Pwm"; }
+        QWidget* customWidget() override;
 
-        virtual QWidget * customWidget() override;
-        
-
-        std::string description() const override {return    "Slider pwm\n";};
+        std::string description() const override { return    "Slider pwm\n"; };
     private:
-        QSlider *slider_;
+        QSlider* slider_;
+    };
+
+    class SignalSwitcher :public flow::Block {
+    public:
+        SignalSwitcher();
+        std::string name() const override { return "Signal Switcher"; }
+        QWidget* customWidget() override;
+
+        std::string description() const override { return    "Signal Switcher\n"; };
+    private:
+        QPushButton* button_;
+        QLabel* img_;
+        QGroupBox* customWidget_;
+        std::string fileA = flow::Persistency::resourceDir() + "arduino/switch_A.png";
+        std::string fileB = flow::Persistency::resourceDir() + "arduino/switch_B.png";
     };
 
 

@@ -35,6 +35,7 @@ extern "C" FLOW_FACTORY_EXPORT flow::PluginNodeCreator* factory(){
 
     creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<ToggleButtonBlock>>(); }, "interactive");
     creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<SliderPwm>>(); }, "interactive");
+    creator->registerNodeCreator([]() { return std::make_unique<FlowVisualBlock<SignalSwitcher>>(); }, "interactive");
 
     creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<NotOperator>>(); }, "logic");
     creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<AndOperator>>(); }, "logic");
