@@ -20,28 +20,39 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 
-#include <flow/flow.h>
-#include <mico/arduino/flow/ArduinoDeviceBlock.h>
-#include <mico/arduino/flow/Widgets.h>
 #include <mico/arduino/flow/BlockJoyPad.h>
 
-using namespace mico;
-using namespace flow;
+#include <QVBoxLayout>
+#include <QPushButton>
+#include <QSlider>
+#include <QLabel>
+#include <QGroupBox>
+#include <QPixmap>
 
-extern "C" FLOW_FACTORY_EXPORT flow::PluginNodeCreator* factory(){
-    flow::PluginNodeCreator *creator = new flow::PluginNodeCreator;
+namespace mico{
 
-    // Functions
-    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<ArduinoDeviceBlock>>(); }, "arduino");
+    BlockJoyPad::BlockJoyPad(){
+        createPipe<bool>("x");
+        createPipe<bool>("y");
 
-    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<ToggleButtonBlock>>(); }, "interactive");
-    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<SliderPwm>>(); }, "interactive");
-    creator->registerNodeCreator([]() { return std::make_unique<FlowVisualBlock<SignalSwitcher>>(); }, "interactive");
-    creator->registerNodeCreator([]() { return std::make_unique<FlowVisualBlock<BlockJoyPad>>(); }, "interactive");
+        joypad = new JoyPad();
+        QObject::connect(joypad, &JoyPad::xChanged,[&](float _x){
+            getPipe("x")->flush(_x);
+        });
+        QObject::connect(joypad, &JoyPad::yChanged,[&](float _y){
+            getPipe("y")->flush(_y);
+        });
+    }
 
-    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<NotOperator>>(); }, "logic");
-    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<AndOperator>>(); }, "logic");
-    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<OrOperator>>(); }, "logic");
+    QWidget * BlockJoyPad::customWidget(){
+        QGroupBox* gb = new QGroupBox();
+        gb->setMinimumHeight(180);
+        gb->setMinimumWidth(180);
+        QVBoxLayout* l = new QVBoxLayout();
+        gb->setLayout(l);
+        l->addWidget(joypad);
+        return gb;
+    }
 
-    return creator;
+
 }

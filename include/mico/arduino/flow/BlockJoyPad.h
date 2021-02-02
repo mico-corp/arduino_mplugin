@@ -20,28 +20,31 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 
-#include <flow/flow.h>
-#include <mico/arduino/flow/ArduinoDeviceBlock.h>
-#include <mico/arduino/flow/Widgets.h>
-#include <mico/arduino/flow/BlockJoyPad.h>
 
-using namespace mico;
-using namespace flow;
+#ifndef MICO_ARDUINO_FLOW_BLOCKJOYPAD_H_
+#define MICO_ARDUINO_FLOW_BLOCKJOYPAD_H_
 
-extern "C" FLOW_FACTORY_EXPORT flow::PluginNodeCreator* factory(){
-    flow::PluginNodeCreator *creator = new flow::PluginNodeCreator;
+#include <flow/Block.h>
+#include <flow/Outpipe.h>
 
-    // Functions
-    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<ArduinoDeviceBlock>>(); }, "arduino");
+#include <mico/arduino/flow/JoyPad.h>
 
-    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<ToggleButtonBlock>>(); }, "interactive");
-    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<SliderPwm>>(); }, "interactive");
-    creator->registerNodeCreator([]() { return std::make_unique<FlowVisualBlock<SignalSwitcher>>(); }, "interactive");
-    creator->registerNodeCreator([]() { return std::make_unique<FlowVisualBlock<BlockJoyPad>>(); }, "interactive");
+namespace mico{
 
-    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<NotOperator>>(); }, "logic");
-    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<AndOperator>>(); }, "logic");
-    creator->registerNodeCreator([](){ return std::make_unique<FlowVisualBlock<OrOperator>>(); }, "logic");
+    class BlockJoyPad:public flow::Block{
+    public:
+        std::string name() const override {return "Joy Pad";}     
+        QWidget * customWidget() override;
+        
+        BlockJoyPad();
 
-    return creator;
+        std::string description() const override {return    "Joy Pad\n";};
+    private:
+        JoyPad *joypad;
+    };
+
 }
+
+
+
+#endif
