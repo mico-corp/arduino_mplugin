@@ -24,6 +24,7 @@
 
 #include <ArduinoSTL.h>
 #include <map>
+#include <Servo.h>
 
 #include "CmdParser.h"
 
@@ -43,6 +44,7 @@ namespace mico{
 
     private:
       std::map<int, bool> digitalInputs_;
+      Servo pwm0, pwm1, pwm2;
   };
 }
 

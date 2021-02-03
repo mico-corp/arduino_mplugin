@@ -97,19 +97,47 @@ namespace mico{
                 }
             }
         );
-
-
-        registerCallback({ "PWM1" },
+        
+        
+        registerCallback({ "PWM0" },
                 [&](flow::DataFlow _data) {
-                auto v = _data.get<int>("PWM1");
+                auto v = _data.get<int>("PWM0");
                 std::string val = std::to_string(v);
                 if (arduino_->isOpen()) {
                     while (isBeingUsed_) {}
                     isBeingUsed_ = true;
-                    arduino_->writeString("{\"PWM1\":" + val + "}\n");
+                    arduino_->writeString("{\"PWM0\":" + val + "}\n");
                     isBeingUsed_ = false;
                 }
             }
+        );
+
+
+        registerCallback({ "PWM1" },
+            [&](flow::DataFlow _data) {
+            auto v = _data.get<int>("PWM1");
+            std::string val = std::to_string(v);
+            if (arduino_->isOpen()) {
+                while (isBeingUsed_) {}
+                isBeingUsed_ = true;
+                arduino_->writeString("{\"PWM1\":" + val + "}\n");
+                isBeingUsed_ = false;
+            }
+        }
+        );
+
+
+        registerCallback({ "PWM2" },
+            [&](flow::DataFlow _data) {
+            auto v = _data.get<int>("PWM2");
+            std::string val = std::to_string(v);
+            if (arduino_->isOpen()) {
+                while (isBeingUsed_) {}
+                isBeingUsed_ = true;
+                arduino_->writeString("{\"PWM2\":" + val + "}\n");
+                isBeingUsed_ = false;
+            }
+        }
         );
 
     }
@@ -125,6 +153,17 @@ namespace mico{
     }
 
     bool ArduinoDeviceBlock::configure(std::vector<flow::ConfigParameterDef> _params) {
+        if(isRunning_){
+            isRunning_ = false;
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+            if (readThread_.joinable())
+                readThread_.join();
+
+            if (arduino_)
+                arduino_->close();
+        
+        }
+
         if(auto param = getParamByName(_params, "device"); param){
             try{
                 arduino_ = std::shared_ptr<SerialPort>(new SerialPort(param.value().asString(), 115200));
@@ -133,6 +172,7 @@ namespace mico{
                 return false;
             }
             std::this_thread::sleep_for(std::chrono::seconds(1));
+            isRunning_ = true;
             readThread_ = std::thread(&ArduinoDeviceBlock::readLoop, this);
         }
 

@@ -54,7 +54,7 @@ namespace mico{
       //Serial.println(cmd.content_.as<int>());
     }else if(key.indexOf("PWM") > -1){
       cmd.type_ = CMD_TYPE::PWM;
-      cmd.pin_ = key[3] - '0' + 8;
+      cmd.pin_ = key[3] - '0' + 9;
       //Serial.print("Pwm cmd with pin ");
       //Serial.print(cmd.pin_);
       //Serial.print(" and value ");

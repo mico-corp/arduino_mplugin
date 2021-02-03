@@ -34,12 +34,16 @@ namespace mico{
                       {5,true},
                       {6,true},
                       {7,true},
-                      {8,true}};
+                      {8,true},
+                      {9,true}};
     
     /// PWMS
-    pinMode(9, OUTPUT);
-    pinMode(10, OUTPUT);
-    pinMode(11, OUTPUT);
+//    pinMode(9, OUTPUT);
+//    pinMode(10, OUTPUT);
+//    pinMode(11, OUTPUT);
+    pwm0.attach(9);
+    pwm1.attach(10);
+    pwm2.attach(11);
   }
 
   void CmdRunner::run(const Command &_cmd){
@@ -101,9 +105,13 @@ namespace mico{
   
   void CmdRunner::runPwm(const Command &_cmd){
     int val = _cmd.content_.as<int>();
-    analogWrite(_cmd.pin_, val);
-    Serial.print("Running pwm with val ");
-    Serial.println(val);
+    if(_cmd.pin_ == 9){
+      pwm0.write(val); 
+    }else if(_cmd.pin_ == 10){
+      pwm1.write(val);
+    }else if(_cmd.pin_ == 11){
+      pwm2.write(val);
+    }
   }
   
   void CmdRunner::runSerial(const Command &_cmd){
