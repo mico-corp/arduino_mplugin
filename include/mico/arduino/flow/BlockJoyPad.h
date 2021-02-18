@@ -44,7 +44,7 @@ namespace mico{
             /// Base constructor
             BlockJoyPad();
 
-            /// Returns a nrief description of the block
+            /// Returns a brief description of the block
             std::string description() const override {return    "Joy Pad\n";};
         private:
             JoyPad *joypad;

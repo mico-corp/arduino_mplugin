@@ -47,7 +47,7 @@ namespace mico{
             /// Base constructor
             ToggleButtonBlock();
 
-            /// Returns a nrief description of the block
+            /// Returns a brief description of the block
             std::string description() const override {return    "ToggleButton\n";};
         private:
             QPushButton *button_;
@@ -67,7 +67,7 @@ namespace mico{
             /// Get custom view widget to be display in the graph
             QWidget* customWidget() override;
 
-            /// Returns a nrief description of the block
+            /// Returns a brief description of the block
             std::string description() const override { return    "Slider pwm\n"; };
         private:
             QSlider* slider_;
@@ -86,7 +86,7 @@ namespace mico{
             /// Get custom view widget to be display in the graph
             QWidget* customWidget() override;
 
-            /// Returns a nrief description of the block
+            /// Returns a brief description of the block
             std::string description() const override { return    "Signal Switcher\n"; };
         private:
             QPushButton* button_;
@@ -118,7 +118,7 @@ namespace mico{
 
             /// Get name of block
             virtual std::string name() const override {return "NOT";}     
-            /// Returns a nrief description of the block
+            /// Returns a brief description of the block
             std::string description() const override {return    "NOT\n";};
         };
 
@@ -142,7 +142,7 @@ namespace mico{
 
             /// Get name of block
             virtual std::string name() const override {return "AND";}     
-            /// Returns a nrief description of the block
+            /// Returns a brief description of the block
             std::string description() const override {return    "AND\n";};
         };
 
@@ -165,7 +165,7 @@ namespace mico{
 
             /// Get name of block
             virtual std::string name() const override {return "OR";}     
-            /// Returns a nrief description of the block
+            /// Returns a brief description of the block
             std::string description() const override {return    "OR\n";};
         };
 
