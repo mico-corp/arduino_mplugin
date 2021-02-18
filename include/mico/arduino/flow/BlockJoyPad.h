@@ -30,19 +30,26 @@
 #include <mico/arduino/flow/JoyPad.h>
 
 namespace mico{
+    namespace arduino {
+        /// Mico interactive block that simulates a joypad to generate -+1 signals in two axis
+        /// @ingroup  mico_arduino
+        class BlockJoyPad:public flow::Block{
+        public:
+            /// Retreive name of block;
+            std::string name() const override {return "Joy Pad";}     
 
-    class BlockJoyPad:public flow::Block{
-    public:
-        std::string name() const override {return "Joy Pad";}     
-        QWidget * customWidget() override;
-        
-        BlockJoyPad();
+            /// Get custom view widget to be display in the graph
+            QWidget * customWidget() override;
+            
+            /// Base constructor
+            BlockJoyPad();
 
-        std::string description() const override {return    "Joy Pad\n";};
-    private:
-        JoyPad *joypad;
-    };
-
+            /// Returns a nrief description of the block
+            std::string description() const override {return    "Joy Pad\n";};
+        private:
+            JoyPad *joypad;
+        };
+    }
 }
 
 

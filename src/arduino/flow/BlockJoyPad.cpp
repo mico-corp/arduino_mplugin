@@ -30,29 +30,29 @@
 #include <QPixmap>
 
 namespace mico{
+    namespace arduino {
+        BlockJoyPad::BlockJoyPad(){
+            createPipe<bool>("x");
+            createPipe<bool>("y");
 
-    BlockJoyPad::BlockJoyPad(){
-        createPipe<bool>("x");
-        createPipe<bool>("y");
+            joypad = new JoyPad();
+            QObject::connect(joypad, &JoyPad::xChanged,[&](float _x){
+                getPipe("x")->flush(_x);
+            });
+            QObject::connect(joypad, &JoyPad::yChanged,[&](float _y){
+                getPipe("y")->flush(_y);
+            });
+        }
 
-        joypad = new JoyPad();
-        QObject::connect(joypad, &JoyPad::xChanged,[&](float _x){
-            getPipe("x")->flush(_x);
-        });
-        QObject::connect(joypad, &JoyPad::yChanged,[&](float _y){
-            getPipe("y")->flush(_y);
-        });
+        QWidget * BlockJoyPad::customWidget(){
+            QGroupBox* gb = new QGroupBox();
+            gb->setMinimumHeight(180);
+            gb->setMinimumWidth(180);
+            QVBoxLayout* l = new QVBoxLayout();
+            gb->setLayout(l);
+            l->addWidget(joypad);
+            return gb;
+        }
+
     }
-
-    QWidget * BlockJoyPad::customWidget(){
-        QGroupBox* gb = new QGroupBox();
-        gb->setMinimumHeight(180);
-        gb->setMinimumWidth(180);
-        QVBoxLayout* l = new QVBoxLayout();
-        gb->setLayout(l);
-        l->addWidget(joypad);
-        return gb;
-    }
-
-
 }

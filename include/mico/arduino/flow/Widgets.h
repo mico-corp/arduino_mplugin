@@ -34,118 +34,142 @@ class QGroupBox;
 
 namespace mico{
 
-    class ToggleButtonBlock:public flow::Block{
-    public:
-        std::string name() const override {return "Toggle Button";}     
-        QWidget * customWidget() override;
-        
-        ToggleButtonBlock();
-
-        std::string description() const override {return    "ToggleButton\n";};
-    private:
-        QPushButton *button_;
-    };
-
-
-    class SliderPwm :public flow::Block {
-    public:
-        SliderPwm();
-
-        std::string name() const override { return "Slider Pwm"; }
-        QWidget* customWidget() override;
-
-        std::string description() const override { return    "Slider pwm\n"; };
-    private:
-        QSlider* slider_;
-    };
-
-    class SignalSwitcher :public flow::Block {
-    public:
-        SignalSwitcher();
-        std::string name() const override { return "Signal Switcher"; }
-        QWidget* customWidget() override;
-
-        std::string description() const override { return    "Signal Switcher\n"; };
-    private:
-        QPushButton* button_;
-        QLabel* img_;
-        QGroupBox* customWidget_;
-        std::string fileA = flow::Persistency::resourceDir() + "arduino/switch_A.png";
-        std::string fileB = flow::Persistency::resourceDir() + "arduino/switch_B.png";
-    };
-
-
-    class NotOperator :public flow::Block{
-    public:
-        NotOperator(){
-            createPipe<bool>("NoA");
+    namespace arduino {
+        /// Mico interactive block that simulates a toggle button.
+        /// @ingroup  mico_arduino
+        class ToggleButtonBlock:public flow::Block{
+        public:
+            /// Retrieve name of block
+            std::string name() const override {return "Toggle Button";}     
+            /// Get custom view widget to be display in the graph
+            QWidget * customWidget() override;
             
-            createPolicy({  flow::makeInput<bool>("A")});
+            /// Base constructor
+            ToggleButtonBlock();
 
-            registerCallback({"A"}, 
-                [&](flow::DataFlow _data){
-                    bool res = !_data.get<bool>("A");
-                    getPipe("NoA")->flush(res);
-                }
-            );
-        }
-
-        virtual std::string name() const override {return "NOT";}     
-        std::string description() const override {return    "NOT\n";};
-        // virtual QIcon icon() const override { 
-        //     std::string userDir(getenv("USER"));
-        //     std::string resourcesDir = "/home/"+userDir+"/.flow/plugins/resources/arduino/";
-        //     return QIcon((resourcesDir+"arduino_icon.png").c_str());
-        // }        
-    };
-
-    class AndOperator :public flow::Block{
-    public:
-        AndOperator(){
-            createPipe<bool>("out");
-            createPolicy({  flow::makeInput<bool>("A"),
-                            flow::makeInput<bool>("B") });
-            registerCallback({"A", "B"}, 
-                [&](flow::DataFlow _data){
-                    bool res = _data.get<bool>("A") && _data.get<bool>("B");
-                    getPipe("out")->flush(res);
-                }
-            );
-        }
-
-        virtual std::string name() const override {return "AND";}     
-        std::string description() const override {return    "AND\n";};
-        // virtual QIcon icon() const override { 
-        //     std::string userDir(getenv("USER"));
-        //     std::string resourcesDir = "/home/"+userDir+"/.flow/plugins/resources/arduino/";
-        //     return QIcon((resourcesDir+"arduino_icon.png").c_str());
-        // }        
-    };
-
-    class OrOperator :public flow::Block{
-    public:
-        OrOperator(){
-            createPipe<bool>("out");
-            createPolicy({  flow::makeInput<bool>("A"),
-                            flow::makeInput<bool>("B") });
-            registerCallback({"in"}, 
-                [&](flow::DataFlow _data){
-                    bool res = _data.get<bool>("A") || _data.get<bool>("B");
-                    getPipe("out")->flush(res);
-                }
-            );
-        }
-
-        virtual std::string name() const override {return "OR";}     
-        std::string description() const override {return    "OR\n";};
-        // virtual QIcon icon() const override { 
-        //     std::string userDir(getenv("USER"));
-        //     std::string resourcesDir = "/home/"+userDir+"/.flow/plugins/resources/arduino/";
-        //     return QIcon((resourcesDir+"arduino_icon.png").c_str());
-        // }        
-    };
+            /// Returns a nrief description of the block
+            std::string description() const override {return    "ToggleButton\n";};
+        private:
+            QPushButton *button_;
+        };
 
 
+        /// Mico interactive block that simulates a slider bar to generate integer values.
+        /// @ingroup  mico_arduino
+        class SliderPwm :public flow::Block {
+        public:
+            /// Base constructor
+            SliderPwm();
+
+            /// Retrive name of block
+            std::string name() const override { return "Slider Pwm"; }
+
+            /// Get custom view widget to be display in the graph
+            QWidget* customWidget() override;
+
+            /// Returns a nrief description of the block
+            std::string description() const override { return    "Slider pwm\n"; };
+        private:
+            QSlider* slider_;
+        };
+
+        /// Mico interactive block that switches between two different signals with an interactive button.
+        /// @ingroup  mico_arduino
+        class SignalSwitcher :public flow::Block {
+        public:
+            /// Base constructor
+            SignalSwitcher();
+
+            /// Retreive name of block
+            std::string name() const override { return "Signal Switcher"; }
+
+            /// Get custom view widget to be display in the graph
+            QWidget* customWidget() override;
+
+            /// Returns a nrief description of the block
+            std::string description() const override { return    "Signal Switcher\n"; };
+        private:
+            QPushButton* button_;
+            QLabel* img_;
+            QGroupBox* customWidget_;
+            std::string fileA = flow::Persistency::resourceDir() + "arduino/switch_A.png";
+            std::string fileB = flow::Persistency::resourceDir() + "arduino/switch_B.png";
+        };
+
+
+        /// Mico block that performs a NOT operation on the given input.
+        /// @ingroup  mico_arduino
+        class NotOperator :public flow::Block{
+        public:
+
+            /// Base constructor
+            NotOperator(){
+                createPipe<bool>("NoA");
+                
+                createPolicy({  flow::makeInput<bool>("A")});
+
+                registerCallback({"A"}, 
+                    [&](flow::DataFlow _data){
+                        bool res = !_data.get<bool>("A");
+                        getPipe("NoA")->flush(res);
+                    }
+                );
+            }
+
+            /// Get name of block
+            virtual std::string name() const override {return "NOT";}     
+            /// Returns a nrief description of the block
+            std::string description() const override {return    "NOT\n";};
+        };
+
+        
+        /// Mico block that performs a AND operation on the given input.
+        /// @ingroup  mico_arduino
+        class AndOperator :public flow::Block{
+        public:
+            /// Base constructor
+            AndOperator(){
+                createPipe<bool>("out");
+                createPolicy({  flow::makeInput<bool>("A"),
+                                flow::makeInput<bool>("B") });
+                registerCallback({"A", "B"}, 
+                    [&](flow::DataFlow _data){
+                        bool res = _data.get<bool>("A") && _data.get<bool>("B");
+                        getPipe("out")->flush(res);
+                    }
+                );
+            }
+
+            /// Get name of block
+            virtual std::string name() const override {return "AND";}     
+            /// Returns a nrief description of the block
+            std::string description() const override {return    "AND\n";};
+        };
+
+        /// Mico block that performs a OR operation on the given input.
+        /// @ingroup  mico_arduino
+        class OrOperator :public flow::Block{
+        public:
+            /// Base constructor
+            OrOperator(){
+                createPipe<bool>("out");
+                createPolicy({  flow::makeInput<bool>("A"),
+                                flow::makeInput<bool>("B") });
+                registerCallback({"in"}, 
+                    [&](flow::DataFlow _data){
+                        bool res = _data.get<bool>("A") || _data.get<bool>("B");
+                        getPipe("out")->flush(res);
+                    }
+                );
+            }
+
+            /// Get name of block
+            virtual std::string name() const override {return "OR";}     
+            /// Returns a nrief description of the block
+            std::string description() const override {return    "OR\n";};
+        };
+
+    }
 }
 
 

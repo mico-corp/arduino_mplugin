@@ -31,39 +31,50 @@ class QLineEdit;
 class SerialPort;
 
 namespace mico{
+    namespace arduino{
+        /// Mico block is used to connecto a physical arduino. With this block, it is possible to send and receive signals
+        /// from the arduino for any purpose.
+        /// @ingroup  mico_arduino
+        class ArduinoDeviceBlock:public flow::Block{
+        public:
+            /// Get name of block
+            virtual std::string name() const override {return "Arduino Device";} 
 
-    class ArduinoDeviceBlock:public flow::Block{
-    public:
-        virtual std::string name() const override {return "Arduino Device";}     
-        virtual QIcon icon() const override { 
-            return QIcon((flow::Persistency::resourceDir()+"arduino/arduino_icon.png").c_str());
-        }
+            /// Retreive icon of block    
+            virtual QIcon icon() const override { 
+                return QIcon((flow::Persistency::resourceDir()+"arduino/arduino_icon.png").c_str());
+            }
 
-        
-        ArduinoDeviceBlock();
-        ~ArduinoDeviceBlock();
+            /// Base constructor
+            ArduinoDeviceBlock();
 
-        virtual bool configure(std::vector<flow::ConfigParameterDef> _params) override;
-        std::vector<flow::ConfigParameterDef> parameters() override;
+            /// Base destructor
+            ~ArduinoDeviceBlock();
 
-        std::string description() const override {return    "Arduino Device. Configure connection with"
-                                                            "arduino device to use the rest of the blocks\n";};
+            /// Configure block with given parameters.
+            virtual bool configure(std::vector<flow::ConfigParameterDef> _params) override;
+            /// Get list of parameters of the block
+            std::vector<flow::ConfigParameterDef> parameters() override;
 
-    protected:
-        void readLoop();
+            /// Returns a nrief description of the block
+            std::string description() const override {return    "Arduino Device. Configure connection with"
+                                                                "arduino device to use the rest of the blocks\n";};
 
-        void parseArduinoMessage();
+        protected:
+            void readLoop();
 
-        std::vector<std::string> getListOfDevices();
+            void parseArduinoMessage();
 
-    private:
-        std::shared_ptr<SerialPort> arduino_;
-        bool isBeingUsed_ = false;
-        bool isRunning_ = true;
-        std::thread readThread_;
-    };
+            std::vector<std::string> getListOfDevices();
 
+        private:
+            std::shared_ptr<SerialPort> arduino_;
+            bool isBeingUsed_ = false;
+            bool isRunning_ = true;
+            std::thread readThread_;
+        };
 
+    }
 
 }
 

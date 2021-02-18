@@ -25,7 +25,7 @@
 #include <mico/arduino/flow/Widgets.h>
 #include <mico/arduino/flow/BlockJoyPad.h>
 
-using namespace mico;
+using namespace mico::arduino;
 using namespace flow;
 
 extern "C" FLOW_FACTORY_EXPORT flow::PluginNodeCreator* factory(){

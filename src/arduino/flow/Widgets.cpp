@@ -30,85 +30,85 @@
 #include <QPixmap>
 
 namespace mico{
+    namespace arduino {
+        ToggleButtonBlock::ToggleButtonBlock(){
+            createPipe<bool>("state");
 
-    ToggleButtonBlock::ToggleButtonBlock(){
-        createPipe<bool>("state");
+            button_ = new QPushButton("Toggle me");
+            button_->setCheckable(true);
+            QObject::connect(button_, &QPushButton::clicked,[&](){
+                getPipe("state")->flush((bool)button_->isChecked());
+            });
+        }
 
-        button_ = new QPushButton("Toggle me");
-        button_->setCheckable(true);
-        QObject::connect(button_, &QPushButton::clicked,[&](){
-            getPipe("state")->flush((bool)button_->isChecked());
-        });
-    }
+        QWidget * ToggleButtonBlock::customWidget(){
+            return button_;
+        }
 
-    QWidget * ToggleButtonBlock::customWidget(){
-        return button_;
-    }
-
-    
-    SliderPwm::SliderPwm(){
-        createPipe<int>("pwm");
-
-        slider_ = new QSlider();
-        slider_->setMinimum(0);
-        slider_->setMaximum(255);
         
-        QObject::connect(slider_, &QSlider::valueChanged,[&](int _val){
-            getPipe("pwm")->flush(_val);
-        });
+        SliderPwm::SliderPwm(){
+            createPipe<int>("pwm");
+
+            slider_ = new QSlider();
+            slider_->setMinimum(0);
+            slider_->setMaximum(255);
+            
+            QObject::connect(slider_, &QSlider::valueChanged,[&](int _val){
+                getPipe("pwm")->flush(_val);
+            });
+        }
+
+        QWidget * SliderPwm::customWidget(){
+            return slider_;
+        }
+
+        SignalSwitcher::SignalSwitcher() {
+            
+            customWidget_ = new QGroupBox();
+
+            QVBoxLayout* l = new QVBoxLayout();
+            customWidget_->setLayout(l);
+
+            img_ = new QLabel();
+            img_->setMaximumHeight(50);
+            img_->setMaximumWidth(50);
+            img_->setPixmap(QIcon(fileA.c_str()).pixmap(50,50));
+            l->addWidget(img_);
+
+            button_ = new QPushButton("Toggle Signal");
+            button_->setCheckable(true);
+            l->addWidget(button_);
+
+            QObject::connect(button_, &QPushButton::clicked, [&](bool _checked) {
+                if (_checked) {
+                    img_->setPixmap(QIcon(fileA.c_str()).pixmap(50, 50));
+                }
+                else {
+                    img_->setPixmap(QIcon(fileB.c_str()).pixmap(50, 50));
+                }
+            });
+
+            createPipe<std::any>("Out");
+            createPolicy({  flow::makeInput<std::any>("A"),
+                            flow::makeInput<std::any>("B")});
+
+            registerCallback({ "A" },
+                [&](flow::DataFlow _data) {
+                    if (auto pipe = getPipe("Out"); pipe->registrations() && !button_->isChecked())
+                        pipe->flush(_data.get<std::any>("A"));
+                }
+            );
+
+            registerCallback({ "B" },
+                [&](flow::DataFlow _data) {
+                    if (auto pipe = getPipe("Out"); pipe->registrations() && button_->isChecked())
+                        pipe->flush(_data.get<std::any>("B"));
+                }
+            );
+        }
+
+        QWidget* SignalSwitcher::customWidget() {
+            return customWidget_;
+        }
     }
-
-    QWidget * SliderPwm::customWidget(){
-        return slider_;
-    }
-
-    SignalSwitcher::SignalSwitcher() {
-        
-        customWidget_ = new QGroupBox();
-
-        QVBoxLayout* l = new QVBoxLayout();
-        customWidget_->setLayout(l);
-
-        img_ = new QLabel();
-        img_->setMaximumHeight(50);
-        img_->setMaximumWidth(50);
-        img_->setPixmap(QIcon(fileA.c_str()).pixmap(50,50));
-        l->addWidget(img_);
-
-        button_ = new QPushButton("Toggle Signal");
-        button_->setCheckable(true);
-        l->addWidget(button_);
-
-        QObject::connect(button_, &QPushButton::clicked, [&](bool _checked) {
-            if (_checked) {
-                img_->setPixmap(QIcon(fileA.c_str()).pixmap(50, 50));
-            }
-            else {
-                img_->setPixmap(QIcon(fileB.c_str()).pixmap(50, 50));
-            }
-        });
-
-        createPipe<std::any>("Out");
-        createPolicy({  flow::makeInput<std::any>("A"),
-                        flow::makeInput<std::any>("B")});
-
-        registerCallback({ "A" },
-            [&](flow::DataFlow _data) {
-                if (auto pipe = getPipe("Out"); pipe->registrations() && !button_->isChecked())
-                    pipe->flush(_data.get<std::any>("A"));
-            }
-        );
-
-        registerCallback({ "B" },
-            [&](flow::DataFlow _data) {
-                if (auto pipe = getPipe("Out"); pipe->registrations() && button_->isChecked())
-                    pipe->flush(_data.get<std::any>("B"));
-            }
-        );
-    }
-
-    QWidget* SignalSwitcher::customWidget() {
-        return customWidget_;
-    }
-
 }
